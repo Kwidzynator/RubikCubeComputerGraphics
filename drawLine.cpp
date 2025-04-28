@@ -30,6 +30,18 @@ void DrawLine::paintingPixel(QPoint point) {
     }
 }
 
+void DrawLine::paintFilledRect(int x, int y, int width, int height, int r, int g, int b) {
+    this->r = r;
+    this->g = g;
+    this->b = b;
+
+    for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            paintingPixel(QPoint(x + j, y + i));
+        }
+    }
+}
+
 void DrawLine::paintingGreen(QPoint point) {
     if (!checkIfInFrame(point)) return;
 

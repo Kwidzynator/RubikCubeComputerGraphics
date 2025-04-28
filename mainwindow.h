@@ -87,6 +87,18 @@ public:
     void drawRubikFace(int);
     bool shouldConnectRubikVertices(int, int);
 
+    struct Sticker{
+        int faceId;
+        int row;
+        int col;
+        int r;
+        int g;
+        int b;
+    };
+
+    std::vector<Sticker> stickers;
+    void setColour(MainWindow::Sticker* sticker, int faceId);
+    void drawSticker(const Sticker& sticker, const QPoint& startPoint);
 
 private:
     Ui::MainWindow *ui;

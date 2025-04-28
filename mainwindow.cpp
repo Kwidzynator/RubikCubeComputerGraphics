@@ -5,6 +5,9 @@
 #include <cmath>
 #include "drawline.h"
 
+
+
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -287,7 +290,69 @@ void MainWindow::setUpCube() {
     }};
 
 
+
+    for (int faceId = 0; faceId < 6; ++faceId) {
+        // Zamiast 'second', bezpośrednio uzyskujemy dostęp do wektora.
+        const auto& face = rubikFaces[faceId]; // To jest wektor współrzędnych wierzchołków dla danej ściany.
+
+        // Teraz dla każdego wiersza i kolumny (3x3) dzielimy ścianę na mniejsze kwadraty.
+        for (int row = 0; row < 3; ++row) {
+            for (int col = 0; col < 3; ++col) {
+                // Interpolacja pomiędzy punktami ściany na 3x3
+                // Przekształcamy współrzędne wierzchołków na 2D
+                // Zakładając, że masz metodę, która przekształca punkty 3D do 2D (np. projektując je na ekran)
+
+                // Tworzymy naklejkę
+                Sticker sticker;
+                sticker.faceId = faceId;
+                sticker.row = row;
+                sticker.col = col;
+
+                // Ustawiamy kolor w zależności od faceId
+                setColour(&sticker, faceId);
+
+                // Dodajemy naklejkę do wektora
+                stickers.push_back(sticker);
+            }
+        }
+    }
+
     drawCube();
+}
+
+void MainWindow::setColour(MainWindow::Sticker* sticker, int faceId){
+    switch (faceId){
+    case 0:
+        sticker->r = 255;
+        sticker->g = 0;
+        sticker->b = 0;
+        break;
+    case 1:
+        sticker->r = 255;
+        sticker->g = 165;
+        sticker->b = 0;
+        break;
+    case 2:
+        sticker->r = 0;
+        sticker->g = 128;
+        sticker->b = 0;
+        break;
+    case 3:
+        sticker->r = 255;
+        sticker->g = 255;
+        sticker->b = 0;
+        break;
+    case 4:
+        sticker->r = 255;
+        sticker->g = 255;
+        sticker->b = 255;
+        break;
+    case 5:
+        sticker->r = 0;
+        sticker->g = 0;
+        sticker->b = 255;
+        break;
+    }
 }
 
 void MainWindow::copy(QImage* copied, QImage* edited) {
@@ -595,7 +660,6 @@ void MainWindow::drawCube() {
         objCenterZ /= newCoordinates3D.size();
     }
 
-
     for (int i = 0; i < walls.size(); i++) {
         std::array<double, 3> wallCenter = {
             (newCoordinates3D[walls[i][0]][0] + newCoordinates3D[walls[i][1]][0] +
@@ -616,8 +680,10 @@ void MainWindow::drawCube() {
 
         double dot = vxOut * vx_cam + vyOut * vy_cam + vzOut * vz_cam;
 
-        if(dot > 1e-3) {
-            std::cout << "znaleziono widoczną ściane" << std::endl;
+        if (dot > 1e-3) {
+            std::cout << "znaleziono widoczną ścianę" << std::endl;
+
+            // Rysowanie głównych krawędzi ściany
             for (int j = 0; j < 4; ++j) {
                 int startIdx = walls[i][j];
                 int endIdx = walls[i][(j + 1) % 4];
@@ -626,10 +692,10 @@ void MainWindow::drawCube() {
                 drawline->paintLine(startPoint, endPoint, 255, 255, 255);
             }
 
-
+            // Rysowanie naklejek (9 kwadratów na każdej ścianie)
             if (rubikFaces.find(i) != rubikFaces.end()) {
-                std::cout << "wywolano rubik, faces" << std::endl;
-                const auto& rubikVerts = rubikFaces[i];
+                std::cout << "wywołano rubik, faces" << std::endl;
+                const auto& rubikVerts = rubikFaces[i];  // Współrzędne 3D dla tej ściany
 
                 std::vector<QPoint> points2D;
                 for (const auto& vert3D : rubikVerts) {
@@ -643,32 +709,51 @@ void MainWindow::drawCube() {
                     }
                 }
 
-                // Define connections for a grid pattern
-                // This will depend on how your vertices are arranged
-                // For example, if the vertices are arranged in a specific pattern:
+                // Zdefiniuj 9 kwadratów na 3x3 na ścianie
                 if (points2D.size() >= 8) {
-                    // Example connections (adjust based on your vertex arrangement)
-                    // Horizontal lines
-                    drawline->paintLine(points2D[0], points2D[2], 0, 0, 0);
-                    drawline->paintLine(points2D[1], points2D[3], 0, 0, 0);
-                    drawline->paintLine(points2D[4], points2D[5], 0, 0, 0);
-                    drawline->paintLine(points2D[6], points2D[7], 0, 0, 0);
+                    // Zmienna do obliczeń: Na każdą stronę przypada 3x3 naklejki
+                    for (int row = 0; row < 3; ++row) {
+                        for (int col = 0; col < 3; ++col) {
+                            // Interpolacja do znalezienia 2D punktów dla poszczególnych naklejek.
+                            int idx = row * 3 + col;  // Indeks naklejki w obrębie 3x3.
 
-                    // Vertical lines
-                    drawline->paintLine(points2D[0], points2D[1], 0, 0, 0);
-                    drawline->paintLine(points2D[2], points2D[3], 0, 0, 0);
-                    drawline->paintLine(points2D[4], points2D[6], 0, 0, 0);
-                    drawline->paintLine(points2D[5], points2D[7], 0, 0, 0);
+                            // Oblicz punkty 2D dla naklejki
+                            QPoint startPoint(points2D[idx].x(), points2D[idx].y());
+
+                            // Na podstawie row i col, musisz obliczyć inne punkty dla naklejki.
+                            // Następnie rysujesz 9 prostokątów (3x3).
+                            // Oblicz wierzchołki naklejki na podstawie interpolacji i przekształcenia 3D -> 2D.
+                            // Zrób to dla każdej naklejki.
+
+                            // Koloruj naklejki w zależności od faceId
+                            Sticker sticker;
+                            sticker.faceId = i;  // Identyfikator ściany
+                            sticker.row = row;
+                            sticker.col = col;
+                            setColour(&sticker, i);
+
+                            // Zakładając, że masz odpowiednią funkcję rysującą naklejki
+                            drawSticker(sticker, startPoint);
+                        }
+                    }
                 }
             }
-
         }
     }
-    std::cout << std::endl;
-    std::cout << std::endl;
-    std::cout << std::endl;
-    std::cout << std::endl;
+}
 
+void MainWindow::drawSticker(const Sticker& sticker, const QPoint& startPoint) {
+    // Funkcja do rysowania prostokątów/naklejek.
+    // Możesz użyć np. metody paintRect w zależności od tego, jak chcesz to zrobić.
+    int size = 20; // Ustal rozmiar naklejki w pikselach (możesz dostosować)
+
+    // Oblicz inne współrzędne w zależności od row i col
+    // Na razie rysuj prostokąty w odpowiednich miejscach
+    int x = startPoint.x() + sticker.col * size;
+    int y = startPoint.y() + sticker.row * size;
+
+    // Rysowanie prostokąta z odpowiednim kolorem
+    drawline->paintFilledRect(x, y, size, size, sticker.r, sticker.g, sticker.b);
 }
 
 
