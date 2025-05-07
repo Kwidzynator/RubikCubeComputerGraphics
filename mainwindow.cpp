@@ -179,32 +179,32 @@ void MainWindow::setUpCube() {
         {-a + verDis, -a, -a}, {-a + verDis, a, -a},
         {a - verDis, -a, -a}, {a - verDis, a, -a},
         {-a, -a + verDis, -a}, { a, -a + verDis, -a},
-        {-a, a - verDis, -a}, { a, a - verDis, -a}, //przód
-
-        {-a, -a, -a + verDis}, {-a, a, -a + verDis},
-        {-a, -a, a - verDis}, {-a, a, a - verDis},
-        {-a, -a + verDis, -a}, {-a, -a + verDis, a},
-        {-a, a - verDis, -a}, {-a, a - verDis, a}, //lewa
-
-        {a, -a, -a + verDis}, {a, a, -a + verDis},
-        {a, -a, a - verDis}, {a, a, a - verDis},
-        {a, -a + verDis, -a}, {a, -a + verDis, a},
-        {a, a - verDis, -a}, {a, a - verDis, a}, //prawa
+        {-a, a - verDis, -a}, { a, a - verDis, -a}, //front
 
         {-a + verDis, -a, a}, {-a + verDis, a, a},
         {a - verDis, -a, a}, {a - verDis, a, a},
         {-a, -a + verDis, a}, { a, -a + verDis, a},
-        {-a, a - verDis, a}, { a, a - verDis, a}, //tył
+        {-a, a - verDis, a}, { a, a - verDis, a}, //back
+
+        {-a, -a, -a + verDis}, {-a, a, -a + verDis},
+        {-a, -a, a - verDis}, {-a, a, a - verDis},
+        {-a, -a + verDis, -a}, {-a, -a + verDis, a},
+        {-a, a - verDis, -a}, {-a, a - verDis, a}, //left
+
+        {a, -a, -a + verDis}, {a, a, -a + verDis},
+        {a, -a, a - verDis}, {a, a, a - verDis},
+        {a, -a + verDis, -a}, {a, -a + verDis, a},
+        {a, a - verDis, -a}, {a, a - verDis, a}, //right
 
         {-a, -a, -a + verDis}, {a, -a, -a + verDis},
         {-a, -a, a - verDis}, {a, -a, a - verDis},
         {-a + verDis, -a, -a}, {-a + verDis, -a, a},
-        {a - verDis, -a, -a}, {a - verDis, -a, a}, //góra
+        {a - verDis, -a, -a}, {a - verDis, -a, a}, //up
 
         {-a, a, -a + verDis}, {a, a, -a + verDis},
         {-a, a, a - verDis}, {a, a, a - verDis},
         {-a + verDis, a, -a}, {-a + verDis, a, a},
-        {a - verDis, a, -a}, {a - verDis, a, a}, //dół
+        {a - verDis, a, -a}, {a - verDis, a, a}, //down
 
         {-a, -a, -a}, { a, -a, -a},
         { a,  a, -a}, {-a,  a, -a},
@@ -226,42 +226,42 @@ void MainWindow::setUpCube() {
 
 
     rubikFaces = {
-        {0, {  // Front
-                {-a + verDis, -a, -a}, {-a + verDis, a, -a},
-                {a - verDis, -a, -a}, {a - verDis, a, -a},
-                {-a, -a + verDis, -a}, { a, -a + verDis, -a},
-                {-a, a - verDis, -a}, { a, a - verDis, -a},
-            }},
-        {1, {  // Back
-                {-a + verDis, -a, a}, {-a + verDis, a, a},
-                {a - verDis, -a, a}, {a - verDis, a, a},
-                {-a, -a + verDis, a}, { a, -a + verDis, a},
-                {-a, a - verDis, a}, { a, a - verDis, a},
-            }},
-        {2, {  // Left
-                {-a, -a, -a + verDis}, {-a, a, -a + verDis},
-                {-a, -a, a - verDis}, {-a, a, a - verDis},
-                {-a, -a + verDis, -a}, {-a, -a + verDis, a},
-                {-a, a - verDis, -a}, {-a, a - verDis, a},
-            }},
-        {3, {  // Right
-                {a, -a, -a + verDis}, {a, a, -a + verDis},
-                {a, -a, a - verDis}, {a, a, a - verDis},
-                {a, -a + verDis, -a}, {a, -a + verDis, a},
-                {a, a - verDis, -a}, {a, a - verDis, a},
-            }},
-        {4, {  // Top
-                {-a, -a, -a + verDis}, {a, -a, -a + verDis},
-                {-a, -a, a - verDis}, {a, -a, a - verDis},
-                {-a + verDis, -a, -a}, {-a + verDis, -a, a},
-                {a - verDis, -a, -a}, {a - verDis, -a, a},
-            }},
-        {5, {  // Bottom
-                {-a, a, -a + verDis}, {a, a, -a + verDis},
-                {-a, a, a - verDis}, {a, a, a - verDis},
-                {-a + verDis, a, -a}, {-a + verDis, a, a},
-                {a - verDis, a, -a}, {a - verDis, a, a},
-            }}
+        {0, {  // front
+             {-a + verDis, -a, -a}, {-a + verDis, a, -a},
+             {a - verDis, -a, -a}, {a - verDis, a, -a},
+             {-a, -a + verDis, -a}, { a, -a + verDis, -a},
+             {-a, a - verDis, -a}, { a, a - verDis, -a},
+             }},
+        {1, {  // back
+             {-a + verDis, -a, a}, {-a + verDis, a, a},
+             {a - verDis, -a, a}, {a - verDis, a, a},
+             {-a, -a + verDis, a}, { a, -a + verDis, a},
+             {-a, a - verDis, a}, { a, a - verDis, a},
+             }},
+        {2, {  // left
+             {-a, -a, -a + verDis}, {-a, a, -a + verDis},
+             {-a, -a, a - verDis}, {-a, a, a - verDis},
+             {-a, -a + verDis, -a}, {-a, -a + verDis, a},
+             {-a, a - verDis, -a}, {-a, a - verDis, a},
+             }},
+        {3, {  // right
+             {a, -a, -a + verDis}, {a, a, -a + verDis},
+             {a, -a, a - verDis}, {a, a, a - verDis},
+             {a, -a + verDis, -a}, {a, -a + verDis, a},
+             {a, a - verDis, -a}, {a, a - verDis, a},
+             }},
+        {4, {  // up
+             {-a, -a, -a + verDis}, {a, -a, -a + verDis},
+             {-a, -a, a - verDis}, {a, -a, a - verDis},
+             {-a + verDis, -a, -a}, {-a + verDis, -a, a},
+             {a - verDis, -a, -a}, {a - verDis, -a, a},
+             }},
+        {5, {  // down
+             {-a, a, -a + verDis}, {a, a, -a + verDis},
+             {-a, a, a - verDis}, {a, a, a - verDis},
+             {-a + verDis, a, -a}, {-a + verDis, a, a},
+             {a - verDis, a, -a}, {a - verDis, a, a},
+             }}
     };
 
     for (const auto& coord: rubikVertices3D) {
@@ -639,6 +639,13 @@ void MainWindow::movePixel(double m[4], std::vector<std::array<double, 3>>* coor
     coords->push_back({x2D, y2D});
 }
 
+QPoint lerp(QPoint a, QPoint b, float t) {
+    return QPoint(
+        static_cast<int>(a.x() * (1 - t) + b.x() * t),
+        static_cast<int>(a.y() * (1 - t) + b.y() * t)
+        );
+}
+
 void MainWindow::drawCube() {
     double cameraX = 0;
     double cameraY = 0;
@@ -680,22 +687,19 @@ void MainWindow::drawCube() {
 
         double dot = vxOut * vx_cam + vyOut * vy_cam + vzOut * vz_cam;
 
-        if (dot > 1e-3) {
-            std::cout << "znaleziono widoczną ścianę" << std::endl;
-
-            // Rysowanie głównych krawędzi ściany
+        if(dot > 1e-3) {
+            std::vector<QPoint> allPoints2D;
             for (int j = 0; j < 4; ++j) {
                 int startIdx = walls[i][j];
                 int endIdx = walls[i][(j + 1) % 4];
                 QPoint startPoint(cubeCoordinates2D[startIdx][0], cubeCoordinates2D[startIdx][1]);
                 QPoint endPoint(cubeCoordinates2D[endIdx][0], cubeCoordinates2D[endIdx][1]);
                 drawline->paintLine(startPoint, endPoint, 255, 255, 255);
+                allPoints2D.push_back(startPoint);
             }
 
-            // Rysowanie naklejek (9 kwadratów na każdej ścianie)
             if (rubikFaces.find(i) != rubikFaces.end()) {
-                std::cout << "wywołano rubik, faces" << std::endl;
-                const auto& rubikVerts = rubikFaces[i];  // Współrzędne 3D dla tej ściany
+                const auto& rubikVerts = rubikFaces[i];
 
                 std::vector<QPoint> points2D;
                 for (const auto& vert3D : rubikVerts) {
@@ -704,36 +708,60 @@ void MainWindow::drawCube() {
                             rubikVertices3D[idx][1] == vert3D[1] &&
                             rubikVertices3D[idx][2] == vert3D[2]) {
                             points2D.push_back(QPoint(rubikVertices2D[idx][0], rubikVertices2D[idx][1]));
+                            allPoints2D.push_back(QPoint(rubikVertices2D[idx][0], rubikVertices2D[idx][1]));
                             break;
                         }
                     }
                 }
 
-                // Zdefiniuj 9 kwadratów na 3x3 na ścianie
                 if (points2D.size() >= 8) {
-                    // Zmienna do obliczeń: Na każdą stronę przypada 3x3 naklejki
+                    drawline->paintLine(points2D[0], points2D[2], 0, 0, 0);
+                    drawline->paintLine(points2D[1], points2D[3], 0, 0, 0);
+                    drawline->paintLine(points2D[4], points2D[5], 0, 0, 0);
+                    drawline->paintLine(points2D[6], points2D[7], 0, 0, 0);
+
+                    drawline->paintLine(points2D[0], points2D[1], 0, 0, 0);
+                    drawline->paintLine(points2D[2], points2D[3], 0, 0, 0);
+                    drawline->paintLine(points2D[4], points2D[6], 0, 0, 0);
+                    drawline->paintLine(points2D[5], points2D[7], 0, 0, 0);
+
+                    QPoint grid[4][4];
+
+                    for (int row = 0; row < 4; ++row) {
+                        float tRow = row / 3.0f;
+                        QPoint left = lerp(allPoints2D[0], allPoints2D[3], tRow);
+                        QPoint right = lerp(allPoints2D[1], allPoints2D[2], tRow);
+
+                        for (int col = 0; col < 4; ++col) {
+                            float tCol = col / 3.0f;
+                            grid[row][col] = lerp(left, right, tCol);
+                        }
+                    }
+
                     for (int row = 0; row < 3; ++row) {
                         for (int col = 0; col < 3; ++col) {
-                            // Interpolacja do znalezienia 2D punktów dla poszczególnych naklejek.
-                            int idx = row * 3 + col;  // Indeks naklejki w obrębie 3x3.
+                            QPoint p1 = grid[row][col];
+                            QPoint p2 = grid[row][col + 1];
+                            QPoint p3 = grid[row + 1][col + 1];
+                            QPoint p4 = grid[row + 1][col];
 
-                            // Oblicz punkty 2D dla naklejki
-                            QPoint startPoint(points2D[idx].x(), points2D[idx].y());
+                            p1.rx() += 1;
+                            p1.ry() += 1;
 
-                            // Na podstawie row i col, musisz obliczyć inne punkty dla naklejki.
-                            // Następnie rysujesz 9 prostokątów (3x3).
-                            // Oblicz wierzchołki naklejki na podstawie interpolacji i przekształcenia 3D -> 2D.
-                            // Zrób to dla każdej naklejki.
+                            //p2.rx() -= 1;
+                            p2.ry() += 1;
 
-                            // Koloruj naklejki w zależności od faceId
-                            Sticker sticker;
-                            sticker.faceId = i;  // Identyfikator ściany
-                            sticker.row = row;
-                            sticker.col = col;
-                            setColour(&sticker, i);
+                            //p3.rx() -= 1;
+                            p3.ry() += 1;
 
-                            // Zakładając, że masz odpowiednią funkcję rysującą naklejki
-                            drawSticker(sticker, startPoint);
+                            p4.rx() += 1;
+                            p4.ry() += 1;
+
+                            drawline->paintingGreen(p1);
+                            drawline->paintingGreen(p2);
+                            drawline->paintingGreen(p3);
+                            drawline->paintingGreen(p4);
+                            drawline->fillQuad(p1, p2, p3, p4, 0, 128, 0);
                         }
                     }
                 }
@@ -741,20 +769,3 @@ void MainWindow::drawCube() {
         }
     }
 }
-
-void MainWindow::drawSticker(const Sticker& sticker, const QPoint& startPoint) {
-    // Funkcja do rysowania prostokątów/naklejek.
-    // Możesz użyć np. metody paintRect w zależności od tego, jak chcesz to zrobić.
-    int size = 20; // Ustal rozmiar naklejki w pikselach (możesz dostosować)
-
-    // Oblicz inne współrzędne w zależności od row i col
-    // Na razie rysuj prostokąty w odpowiednich miejscach
-    int x = startPoint.x() + sticker.col * size;
-    int y = startPoint.y() + sticker.row * size;
-
-    // Rysowanie prostokąta z odpowiednim kolorem
-    drawline->paintFilledRect(x, y, size, size, sticker.r, sticker.g, sticker.b);
-}
-
-
-

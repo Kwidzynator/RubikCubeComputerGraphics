@@ -20,7 +20,9 @@ public:
     bool checkIfInFrame(QPoint point);
     void paintingPixel(QPoint point);
     void paintingGreen(QPoint point);
+    void paintingBlue(QPoint point);
     void paintFilledRect(int, int, int, int, int, int, int);
+    void fillQuad(QPoint, QPoint, QPoint, QPoint, int, int, int);
 private:
     QImage* img;
     int imgWidth;

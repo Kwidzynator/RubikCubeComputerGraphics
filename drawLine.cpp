@@ -19,26 +19,15 @@ void DrawLine::paintingPixel(QPoint point) {
     if(colour == 1){
         paintingGreen(point);
     }
+    else if(colour == 2){
+        paintingBlue(point);
+    }
     else{
         unsigned char* ptr = img->bits();
-
-
         int index = imgWidth * 4 * point.ry() + 4 * point.rx();
-        ptr[index] = 255;
-        ptr[index + 1] = 255;
+        ptr[index] = 0;
+        ptr[index + 1] = 0;
         ptr[index + 2] = 255;
-    }
-}
-
-void DrawLine::paintFilledRect(int x, int y, int width, int height, int r, int g, int b) {
-    this->r = r;
-    this->g = g;
-    this->b = b;
-
-    for (int i = 0; i < height; ++i) {
-        for (int j = 0; j < width; ++j) {
-            paintingPixel(QPoint(x + j, y + i));
-        }
     }
 }
 
@@ -53,6 +42,18 @@ void DrawLine::paintingGreen(QPoint point) {
     ptr[index + 1] = 255;
     ptr[index + 2] = 0;
 
+}
+
+void DrawLine::paintingBlue(QPoint point){
+    if (!checkIfInFrame(point)) return;
+
+    unsigned char* ptr = img->bits();
+
+
+    int index = imgWidth * 4 * point.ry() + 4 * point.rx();
+    ptr[index] = 255;
+    ptr[index + 1] = 0;
+    ptr[index + 2] = 0;
 }
 
 void DrawLine::paintLine(QPoint startPoint, QPoint endPoint, int rd, int gr, int bl) {
@@ -131,4 +132,47 @@ int DrawLine::chooseDirectionX(QPoint start, QPoint end) {
 
 int DrawLine::chooseDirectionY(QPoint start, QPoint end) {
     return start.ry() < end.ry() ? 1 : -1;
+}
+
+QPoint lerpa(QPoint a, QPoint b, float t) {
+    return QPoint(
+        static_cast<int>(a.x() * (1 - t) + b.x() * t),
+        static_cast<int>(a.y() * (1 - t) + b.y() * t)
+        );
+}
+
+void DrawLine::fillQuad(QPoint p1, QPoint p2, QPoint p3, QPoint p4, int rd, int gr, int bl) {
+    r = rd;
+    g = gr;
+    b = bl;
+
+    std::vector<QPoint> vertices = { p1, p2, p3, p4 };
+
+    // Znajdź min i max Y
+    int minY = std::min({p1.y(), p2.y(), p3.y(), p4.y()});
+    int maxY = std::max({p1.y(), p2.y(), p3.y(), p4.y()});
+
+    colour = (colour + 1) % 2;
+
+    for (int y = minY; y <= maxY; ++y) {
+        std::vector<int> xIntersections;
+
+        for (int i = 0; i < 4; ++i) {
+            QPoint a = vertices[i];
+            QPoint b = vertices[(i + 1) % 4];
+
+            if ((y >= a.y() && y < b.y()) || (y >= b.y() && y < a.y())) {
+                float t = float(y - a.y()) / float(b.y() - a.y());
+                int x = static_cast<int>(a.x() + t * (b.x() - a.x()));
+                xIntersections.push_back(x);
+            }
+        }
+
+        if (xIntersections.size() >= 2) {
+            std::sort(xIntersections.begin(), xIntersections.end());
+            for (int x = xIntersections[0]; x <= xIntersections[1]; ++x) {
+                paintingPixel(QPoint(x, y));
+            }
+        }
+    }
 }
