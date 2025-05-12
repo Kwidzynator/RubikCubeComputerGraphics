@@ -96,6 +96,7 @@ public:
         int b;
     };
 
+    Sticker* findSticker(int faceId, int row, int col);
     std::vector<Sticker> stickers;
     void setColour(MainWindow::Sticker* sticker, int faceId);
     void drawSticker(const Sticker& sticker, const QPoint& startPoint);

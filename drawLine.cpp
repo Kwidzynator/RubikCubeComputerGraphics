@@ -16,19 +16,24 @@ bool DrawLine::checkIfInFrame(QPoint point) {
 void DrawLine::paintingPixel(QPoint point) {
     if (!checkIfInFrame(point)) return;
 
-    if(colour == 1){
-        paintingGreen(point);
-    }
-    else if(colour == 2){
-        paintingBlue(point);
-    }
-    else{
-        unsigned char* ptr = img->bits();
-        int index = imgWidth * 4 * point.ry() + 4 * point.rx();
-        ptr[index] = 0;
-        ptr[index + 1] = 0;
-        ptr[index + 2] = 255;
-    }
+    // if(colour == 1){
+    //     paintingGreen(point);
+    // }
+    // else if(colour == 2){
+    //     paintingBlue(point);
+    // }
+    // else{
+    //     unsigned char* ptr = img->bits();
+    //     int index = imgWidth * 4 * point.ry() + 4 * point.rx();
+    //     ptr[index] = 0;
+    //     ptr[index + 1] = 0;
+    //     ptr[index + 2] = 255;
+    // }
+    unsigned char* ptr = img->bits();
+    int index = imgWidth * 4 * point.ry() + 4 * point.rx();
+    ptr[index] = b;
+    ptr[index + 1] = g;
+    ptr[index + 2] = r;
 }
 
 void DrawLine::paintingGreen(QPoint point) {
@@ -148,11 +153,8 @@ void DrawLine::fillQuad(QPoint p1, QPoint p2, QPoint p3, QPoint p4, int rd, int 
 
     std::vector<QPoint> vertices = { p1, p2, p3, p4 };
 
-    // Znajdź min i max Y
     int minY = std::min({p1.y(), p2.y(), p3.y(), p4.y()});
     int maxY = std::max({p1.y(), p2.y(), p3.y(), p4.y()});
-
-    colour = (colour + 1) % 2;
 
     for (int y = minY; y <= maxY; ++y) {
         std::vector<int> xIntersections;

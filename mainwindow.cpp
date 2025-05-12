@@ -292,26 +292,20 @@ void MainWindow::setUpCube() {
 
 
     for (int faceId = 0; faceId < 6; ++faceId) {
-        // Zamiast 'second', bezpośrednio uzyskujemy dostęp do wektora.
+
         const auto& face = rubikFaces[faceId]; // To jest wektor współrzędnych wierzchołków dla danej ściany.
 
-        // Teraz dla każdego wiersza i kolumny (3x3) dzielimy ścianę na mniejsze kwadraty.
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 3; ++col) {
-                // Interpolacja pomiędzy punktami ściany na 3x3
-                // Przekształcamy współrzędne wierzchołków na 2D
-                // Zakładając, że masz metodę, która przekształca punkty 3D do 2D (np. projektując je na ekran)
 
-                // Tworzymy naklejkę
+
                 Sticker sticker;
                 sticker.faceId = faceId;
                 sticker.row = row;
                 sticker.col = col;
 
-                // Ustawiamy kolor w zależności od faceId
                 setColour(&sticker, faceId);
 
-                // Dodajemy naklejkę do wektora
                 stickers.push_back(sticker);
             }
         }
@@ -687,14 +681,17 @@ void MainWindow::drawCube() {
 
         double dot = vxOut * vx_cam + vyOut * vy_cam + vzOut * vz_cam;
 
+
         if(dot > 1e-3) {
+
+            std::cout << "widoczna sciana: " << i << std::endl;
+
             std::vector<QPoint> allPoints2D;
             for (int j = 0; j < 4; ++j) {
                 int startIdx = walls[i][j];
                 int endIdx = walls[i][(j + 1) % 4];
                 QPoint startPoint(cubeCoordinates2D[startIdx][0], cubeCoordinates2D[startIdx][1]);
                 QPoint endPoint(cubeCoordinates2D[endIdx][0], cubeCoordinates2D[endIdx][1]);
-                drawline->paintLine(startPoint, endPoint, 255, 255, 255);
                 allPoints2D.push_back(startPoint);
             }
 
@@ -715,15 +712,6 @@ void MainWindow::drawCube() {
                 }
 
                 if (points2D.size() >= 8) {
-                    drawline->paintLine(points2D[0], points2D[2], 0, 0, 0);
-                    drawline->paintLine(points2D[1], points2D[3], 0, 0, 0);
-                    drawline->paintLine(points2D[4], points2D[5], 0, 0, 0);
-                    drawline->paintLine(points2D[6], points2D[7], 0, 0, 0);
-
-                    drawline->paintLine(points2D[0], points2D[1], 0, 0, 0);
-                    drawline->paintLine(points2D[2], points2D[3], 0, 0, 0);
-                    drawline->paintLine(points2D[4], points2D[6], 0, 0, 0);
-                    drawline->paintLine(points2D[5], points2D[7], 0, 0, 0);
 
                     QPoint grid[4][4];
 
@@ -745,27 +733,68 @@ void MainWindow::drawCube() {
                             QPoint p3 = grid[row + 1][col + 1];
                             QPoint p4 = grid[row + 1][col];
 
-                            p1.rx() += 1;
-                            p1.ry() += 1;
+                            auto sticker = findSticker(i, row, col);
 
-                            //p2.rx() -= 1;
-                            p2.ry() += 1;
+                            int r = sticker->r;
+                            int g = sticker->g;
+                            int b = sticker->b;
 
-                            //p3.rx() -= 1;
-                            p3.ry() += 1;
+                            // p1.rx() += 1;
+                            // p1.ry() += 1;
 
-                            p4.rx() += 1;
-                            p4.ry() += 1;
+                            // p2.ry() += 1;
 
-                            drawline->paintingGreen(p1);
-                            drawline->paintingGreen(p2);
-                            drawline->paintingGreen(p3);
-                            drawline->paintingGreen(p4);
-                            drawline->fillQuad(p1, p2, p3, p4, 0, 128, 0);
+                            // p3.ry() += 1;
+
+                            // p4.rx() += 1;
+                            // p4.ry() += 1;
+
+                            // drawline->paintingGreen(p1);
+                            // drawline->paintingGreen(p2);
+                            // drawline->paintingGreen(p3);
+                            // drawline->paintingGreen(p4);
+                            // std::cout << "maluje w koordynatach: p1: "
+                            //           << p1.x() << " " << p1.y() << " p2: "
+                            //           << p2.x() << " " << p2.y() << " p3: "
+                            //           << p3.x() << " " << p3.y() << " p4: "
+                            //           << p4.x() << " " << p4.y() << " "
+                            //           << std::endl;
+
+                            drawline->fillQuad(p1, p2, p3, p4, r, g, b);
                         }
                     }
+
+                    drawline->paintLine(points2D[0], points2D[2], 0, 0, 0);
+                    drawline->paintLine(points2D[1], points2D[3], 0, 0, 0);
+                    drawline->paintLine(points2D[4], points2D[5], 0, 0, 0);
+                    drawline->paintLine(points2D[6], points2D[7], 0, 0, 0);
+
+                    drawline->paintLine(points2D[0], points2D[1], 0, 0, 0);
+                    drawline->paintLine(points2D[2], points2D[3], 0, 0, 0);
+                    drawline->paintLine(points2D[4], points2D[6], 0, 0, 0);
+                    drawline->paintLine(points2D[5], points2D[7], 0, 0, 0);
+
+                    for (int j = 0; j < 4; ++j) {
+                        int startIdx = walls[i][j];
+                        int endIdx = walls[i][(j + 1) % 4];
+                        QPoint startPoint(cubeCoordinates2D[startIdx][0], cubeCoordinates2D[startIdx][1]);
+                        QPoint endPoint(cubeCoordinates2D[endIdx][0], cubeCoordinates2D[endIdx][1]);
+                        drawline->paintLine(startPoint, endPoint, 255, 255, 255);
+                    }
+
                 }
             }
         }
     }
+
+}
+
+MainWindow::Sticker* MainWindow::findSticker(int faceId, int row, int col) {
+    for (auto& sticker : stickers) {
+        if (sticker.faceId == faceId && sticker.row == row && sticker.col == col) {
+            //std::cout << "found sticker with: " << std::endl << "faceid: " << faceId << std::endl << "row: " << row << std::endl << "col: " << col << std::endl;
+            return &sticker;
+        }
+    }
+    return nullptr;
 }
