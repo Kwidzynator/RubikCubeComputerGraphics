@@ -66,11 +66,42 @@ public:
     void sliderRotateOX(int);
     void sliderRotateOY(int);
     void sliderRotateOZ(int);
-    void sliderScaleOX(int);
-    void sliderScaleOY(int);
-    void sliderScaleOZ(int);
-    void sliderShearingOX(int);
-    void sliderShearingOY(int);
+
+    void changeBottomLeft();
+    void changeBottomRight();
+    void changeTopLeft();
+    void changeTopRight();
+    void changeLeftDown();
+    void changeRightDown();
+    void changeLeftUp();
+    void changeRightUp();
+
+    enum class RubikMove{
+        BottomLeft,
+        BottomRight,
+        TopLeft,
+        TopRight,
+        LeftDown,
+        RightDown,
+        LeftUp,
+        RightUp
+    };
+
+    enum class Direction {
+        Clockwise,
+        CounterClockwise
+    };
+
+    void moveRubik(RubikMove move, Direction direction);
+
+    void rotateBottomLeft(Direction direction);
+    void rotateBottomRight(Direction direction);
+    void rotateTopLeft(Direction direction);
+    void rotateTopRight(Direction direction);
+    void rotateLeftDown(Direction direction);
+    void rotateRightDown(Direction direction);
+    void rotateLeftUp(Direction direction);
+    void rotateRightUp(Direction direction);
 
     void drawCube();
     void multiplicateMatrix();
@@ -101,6 +132,9 @@ public:
     void setColour(MainWindow::Sticker* sticker, int faceId);
     void drawSticker(const Sticker& sticker, const QPoint& startPoint);
 
+    std::array<int, 4> positionsOXOY;
+    std::array<int, 4> positionsOXOZ;
+    std::array<int, 4> positionsOYOZ;
 private:
     Ui::MainWindow *ui;
 

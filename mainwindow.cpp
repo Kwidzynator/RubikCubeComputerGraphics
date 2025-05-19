@@ -6,8 +6,6 @@
 #include "drawline.h"
 
 
-
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -53,25 +51,6 @@ void MainWindow::setUpSliders(){
     ui->rotationSliderOZ->setMaximum(628);
     ui->rotationSliderOZ->setValue(0);
 
-    ui->scalingSliderOX->setMinimum(minVal);
-    ui->scalingSliderOX->setMaximum(maxVal);
-    ui->scalingSliderOX->setValue(0);
-
-    ui->scalingSliderOY->setMinimum(minVal);
-    ui->scalingSliderOY->setMaximum(maxVal);
-    ui->scalingSliderOY->setValue(0);
-
-    ui->scalingSliderOZ->setMinimum(minVal);
-    ui->scalingSliderOZ->setMaximum(maxVal);
-    ui->scalingSliderOZ->setValue(0);
-
-    ui->shearingSliderOX->setMinimum(-70);
-    ui->shearingSliderOX->setMaximum(70);
-    ui->shearingSliderOX->setValue(0);
-
-    ui->shearingSliderOY->setMinimum(-70);
-    ui->shearingSliderOY->setMaximum(70);
-    ui->shearingSliderOY->setValue(0);
 
     connect(ui->translationSliderOX, &QSlider::valueChanged, this, &MainWindow::sliderTranslateOX);
     connect(ui->translationSliderOY, &QSlider::valueChanged, this, &MainWindow::sliderTranslateOY);
@@ -79,11 +58,17 @@ void MainWindow::setUpSliders(){
     connect(ui->rotationSliderOX, &QSlider::valueChanged, this, &MainWindow::sliderRotateOX);
     connect(ui->rotationSliderOY, &QSlider::valueChanged, this, &MainWindow::sliderRotateOY);
     connect(ui->rotationSliderOZ, &QSlider::valueChanged, this, &MainWindow::sliderRotateOZ);
-    connect(ui->scalingSliderOX, &QSlider::valueChanged, this, &MainWindow::sliderScaleOX);
-    connect(ui->scalingSliderOY, &QSlider::valueChanged, this, &MainWindow::sliderScaleOY);
-    connect(ui->scalingSliderOZ, &QSlider::valueChanged, this, &MainWindow::sliderScaleOZ);
-    connect(ui->shearingSliderOX, &QSlider::valueChanged, this, &MainWindow::sliderShearingOX);
-    connect(ui->shearingSliderOY, &QSlider::valueChanged, this, &MainWindow::sliderShearingOY);
+
+    connect(ui->buttonBottomLeft, &QPushButton::clicked, this, &MainWindow::changeBottomLeft);
+    connect(ui->buttonBottomRight, &QPushButton::clicked, this, &MainWindow::changeBottomRight);
+    connect(ui->buttonTopLeft, &QPushButton::clicked, this, &MainWindow::changeTopLeft);
+    connect(ui->buttonTopRight, &QPushButton::clicked, this, &MainWindow::changeTopRight);
+    connect(ui->buttonLeftDown, &QPushButton::clicked, this, &MainWindow::changeLeftDown);
+    connect(ui->buttonRightDown, &QPushButton::clicked, this, &MainWindow::changeRightDown);
+    connect(ui->buttonLeftUp, &QPushButton::clicked, this, &MainWindow::changeLeftUp);
+    connect(ui->buttonRightUp, &QPushButton::clicked, this, &MainWindow::changeRightUp);
+
+
 
     connect(ui->pushButton, &QPushButton::clicked, this, &MainWindow::resetSliders);
 }
@@ -116,23 +101,6 @@ void MainWindow::setUpImg(){
     rotateMatrixZ[1] = {0, 1, 0, 0};
     rotateMatrixZ[2] = {0, 0, 1, 0};
     rotateMatrixZ[3] = {0, 0, 0, 1};
-
-    scaleMatrix[0] = {1, 0, 0, 0};
-    scaleMatrix[1] = {0, 1, 0, 0};
-    scaleMatrix[2] = {0, 0, 1, 0};
-    scaleMatrix[3] = {0, 0, 0, 1};
-
-    shearingMatrixOX[0] = {1, 0, 0, 0};
-    shearingMatrixOX[1] = {0, 1, 0, 0};
-    shearingMatrixOX[2] = {0, 0, 1, 0};
-    shearingMatrixOX[3] = {0, 0, 0, 1};
-
-    shearingMatrixOY[0] = {1, 0, 0, 0};
-    shearingMatrixOY[1] = {0, 1, 0, 0};
-    shearingMatrixOY[2] = {0, 0, 1, 0};
-    shearingMatrixOY[3] = {0, 0, 0, 1};
-
-
 
     imgBeginX = width / 2;
     imgBeginY = height / 2;
@@ -293,7 +261,7 @@ void MainWindow::setUpCube() {
 
     for (int faceId = 0; faceId < 6; ++faceId) {
 
-        const auto& face = rubikFaces[faceId]; // To jest wektor współrzędnych wierzchołków dla danej ściany.
+        const auto& face = rubikFaces[faceId];
 
         for (int row = 0; row < 3; ++row) {
             for (int col = 0; col < 3; ++col) {
@@ -310,6 +278,10 @@ void MainWindow::setUpCube() {
             }
         }
     }
+
+    positionsOXOY = {0, 3, 1, 2};
+    positionsOXOZ = {3, 4, 2, 5};
+    positionsOYOZ = {0, 4, 1, 5};
 
     drawCube();
 }
@@ -384,11 +356,6 @@ void MainWindow::resetSliders()
     ui->rotationSliderOX->setValue(0);
     ui->rotationSliderOY->setValue(0);
     ui->rotationSliderOZ->setValue(0);
-    ui->scalingSliderOX->setValue(0);
-    ui->scalingSliderOY->setValue(0);
-    ui->scalingSliderOZ->setValue(0);
-    ui->shearingSliderOX->setValue(0);
-    ui->shearingSliderOY->setValue(0);
 
     setUpCube();
 }
@@ -466,59 +433,163 @@ void MainWindow::sliderRotateOZ(int value){
     multiplicateMatrix();
 }
 
-void MainWindow::sliderScaleOX(int value){
-    ui->scalingSliderOX->setValue(value);
-    double valueToDouble = static_cast<double>(value/ 100.0f);
 
-    clear(layerBehindImg);
-
-    scaleMatrix[0][0] = std::max(valueToDouble + 1.0, 0.1);
-
-    multiplicateMatrix();
+void MainWindow::changeBottomLeft(){
+    RubikMove move = RubikMove::BottomLeft;
+    Direction dir = Direction::Clockwise;
+    moveRubik(move, dir);
 }
 
-void MainWindow::sliderScaleOY(int value){
-    ui->scalingSliderOY->setValue(value);
-    double valueToDouble = static_cast<double>(value / 100.0f);
-    clear(layerBehindImg);
-
-
-    scaleMatrix[1][1] = std::max(valueToDouble + 1.0, 0.1);
-
-    multiplicateMatrix();
+void MainWindow::changeBottomRight(){
+    RubikMove move = RubikMove::BottomRight;
+    Direction dir = Direction::CounterClockwise;
+    moveRubik(move, dir);
 }
 
-void MainWindow::sliderScaleOZ(int value){
-    ui->scalingSliderOZ->setValue(value);
-    double valueToDouble = static_cast<double>(value / 100.0f);
-    clear(layerBehindImg);
-
-
-    scaleMatrix[2][2] = std::max(valueToDouble + 1.0, 0.1);
-
-    multiplicateMatrix();
+void MainWindow::changeTopLeft(){
+    RubikMove move = RubikMove::TopLeft;
+    Direction dir = Direction::Clockwise;
+    moveRubik(move, dir);
 }
 
-void MainWindow::sliderShearingOX(int value){
-    ui->shearingSliderOX->setValue(value);
-    double valueToDouble = static_cast<double>(value / 100.0f);
-    clear(layerBehindImg);
-
-    shearingMatrixOX[2][0] = -valueToDouble;
-
-    multiplicateMatrix();
+void MainWindow::changeTopRight(){
+    RubikMove move = RubikMove::TopRight;
+    Direction dir = Direction::CounterClockwise;
+    moveRubik(move, dir);
 }
 
-void MainWindow::sliderShearingOY(int value){
-    ui->shearingSliderOY->setValue(value);
-    double valueToDouble = static_cast<double>(value / 100.0f);
-    clear(layerBehindImg);
-
-    shearingMatrixOX[2][1] = -valueToDouble;
-
-
-    multiplicateMatrix();
+void MainWindow::changeLeftDown(){
+    RubikMove move = RubikMove::LeftDown;
+    Direction dir = Direction::CounterClockwise;
+    moveRubik(move, dir);
 }
+
+void MainWindow::changeRightDown(){
+    RubikMove move = RubikMove::RightDown;
+    Direction dir = Direction::CounterClockwise;
+    moveRubik(move, dir);
+}
+
+void MainWindow::changeLeftUp(){
+    RubikMove move = RubikMove::LeftUp;
+    Direction dir = Direction::Clockwise;
+    moveRubik(move, dir);
+}
+
+void MainWindow::changeRightUp(){
+    RubikMove move = RubikMove::RightUp;
+    Direction dir = Direction::Clockwise;
+    moveRubik(move, dir);
+}
+
+void MainWindow::moveRubik(RubikMove move, Direction direction) {
+    switch (move) {
+    case RubikMove::BottomLeft:
+        rotateBottomLeft(direction);
+        break;
+    case RubikMove::BottomRight:
+        rotateBottomRight(direction);
+        break;
+    case RubikMove::TopLeft:
+        rotateTopLeft(direction);
+        break;
+    case RubikMove::TopRight:
+        rotateTopRight(direction);
+        break;
+    case RubikMove::LeftDown:
+        rotateLeftDown(direction);
+        break;
+    case RubikMove::RightDown:
+        rotateRightDown(direction);
+        break;
+    case RubikMove::LeftUp:
+        rotateLeftUp(direction);
+        break;
+    case RubikMove::RightUp:
+        rotateRightUp(direction);
+        break;
+    default:
+        break;
+    }
+}
+
+void MainWindow::rotateBottomLeft(Direction direction){
+
+    int lookedRow = 2;
+    int faceId, row, col;
+    int id = -1;
+    std::pair<int, int> excluded = {4, 5};
+
+    for(auto& stick: stickers){
+        faceId = stick.faceId;
+        row = stick.row;
+        col = stick.col;
+        if(row == lookedRow && faceId != excluded.first && faceId != excluded.second){
+            for(int i = 0; i < 4; i++){
+                if(faceId == positionsOXOY[i]){
+                    id = i;
+                    break;
+                }
+            }
+
+            if(id == -1){
+                std::cerr << "for some reason the face wasnt found inside positionsOXOY" << std::endl;
+                return;
+            }
+
+            int posChange = 0;
+
+            switch(direction){
+                case Direction::Clockwise:
+                    posChange = -1;
+                    break;
+                case Direction::CounterClockwise:
+                    posChange = 1;
+                    break;
+                default:
+                    std::cerr << "for some reason the directory was defined incorrect" << std::endl;
+                    return;
+            }
+
+            stick.faceId = positionsOXOY[(id + posChange + 4) % 4];
+            //positionsOXOY = {0, 3, 1, 2};
+            std::cout << "przenosze z sciany o face id: " << id << " do " << (id + posChange) % 4 << std::endl;
+
+        }
+
+    }
+
+    drawCube();
+}
+
+void MainWindow::rotateBottomRight(Direction direction){
+    drawCube();
+}
+
+void MainWindow::rotateTopLeft(Direction direction){
+    drawCube();
+}
+
+void MainWindow::rotateTopRight(Direction direction){
+    drawCube();
+}
+
+void MainWindow::rotateLeftDown(Direction direction){
+    drawCube();
+}
+
+void MainWindow::rotateRightDown(Direction direction){
+    drawCube();
+}
+
+void MainWindow::rotateLeftUp(Direction direction){
+    drawCube();
+}
+
+void MainWindow::rotateRightUp(Direction direction){
+    drawCube();
+}
+
 
 void MainWindow::clear(QImage *image){
     unsigned char *ptr;
@@ -552,9 +623,6 @@ void MainWindow::multiplicateMatrix() {
     calculatedMatrix = getBiggerMatrix(calculatedMatrix, rotateMatrix);
     calculatedMatrix = getBiggerMatrix(calculatedMatrix, rotateMatrixY);
     calculatedMatrix = getBiggerMatrix(calculatedMatrix, rotateMatrixZ);
-    calculatedMatrix = getBiggerMatrix(calculatedMatrix, scaleMatrix);
-    calculatedMatrix = getBiggerMatrix(calculatedMatrix, shearingMatrixOX);
-    calculatedMatrix = getBiggerMatrix(calculatedMatrix, shearingMatrixOY);
 
     for (int i = 0; i < cubeCoordinates3D.size(); i++) {
 
@@ -739,27 +807,6 @@ void MainWindow::drawCube() {
                             int g = sticker->g;
                             int b = sticker->b;
 
-                            // p1.rx() += 1;
-                            // p1.ry() += 1;
-
-                            // p2.ry() += 1;
-
-                            // p3.ry() += 1;
-
-                            // p4.rx() += 1;
-                            // p4.ry() += 1;
-
-                            // drawline->paintingGreen(p1);
-                            // drawline->paintingGreen(p2);
-                            // drawline->paintingGreen(p3);
-                            // drawline->paintingGreen(p4);
-                            // std::cout << "maluje w koordynatach: p1: "
-                            //           << p1.x() << " " << p1.y() << " p2: "
-                            //           << p2.x() << " " << p2.y() << " p3: "
-                            //           << p3.x() << " " << p3.y() << " p4: "
-                            //           << p4.x() << " " << p4.y() << " "
-                            //           << std::endl;
-
                             drawline->fillQuad(p1, p2, p3, p4, r, g, b);
                         }
                     }
@@ -790,11 +837,20 @@ void MainWindow::drawCube() {
 }
 
 MainWindow::Sticker* MainWindow::findSticker(int faceId, int row, int col) {
+    int searchCol = col;
+
+
+    if (faceId == 1) {
+        searchCol = 2;
+    } else if (faceId == 3) {
+        searchCol = 0;
+    }
+
     for (auto& sticker : stickers) {
-        if (sticker.faceId == faceId && sticker.row == row && sticker.col == col) {
-            //std::cout << "found sticker with: " << std::endl << "faceid: " << faceId << std::endl << "row: " << row << std::endl << "col: " << col << std::endl;
+        if (sticker.faceId == faceId && sticker.row == row && sticker.col == searchCol) {
             return &sticker;
         }
     }
+
     return nullptr;
 }
