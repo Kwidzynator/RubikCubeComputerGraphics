@@ -71,10 +71,16 @@ public:
     void changeBottomRight();
     void changeTopLeft();
     void changeTopRight();
+
     void changeLeftDown();
     void changeRightDown();
     void changeLeftUp();
     void changeRightUp();
+
+    void changeLeftDown_2();
+    void changeRightDown_2();
+    void changeLeftUp_2();
+    void changeRightUp_2();
 
     enum class RubikMove{
         BottomLeft,
@@ -84,7 +90,11 @@ public:
         LeftDown,
         RightDown,
         LeftUp,
-        RightUp
+        RightUp,
+        LeftDown_2,
+        RightDown_2,
+        LeftUp_2,
+        RightUp_2
     };
 
     enum class Direction {
@@ -95,6 +105,8 @@ public:
     void moveRubik(RubikMove move, Direction direction);
     void rotateRow(Direction direction, std::pair<int, int> excluded, int looked);
     void rotateCol(Direction direction, std::pair<int, int> excluded, int looked);
+    void rotateCol_2(Direction direction, std::pair<int, int> excluded, int looked);
+
     void rotateBottomLeft(Direction direction);
     void rotateBottomRight(Direction direction);
     void rotateTopLeft(Direction direction);

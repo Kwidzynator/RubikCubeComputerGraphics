@@ -67,6 +67,10 @@ void MainWindow::setUpSliders(){
     connect(ui->buttonRightDown, &QPushButton::clicked, this, &MainWindow::changeRightDown);
     connect(ui->buttonLeftUp, &QPushButton::clicked, this, &MainWindow::changeLeftUp);
     connect(ui->buttonRightUp, &QPushButton::clicked, this, &MainWindow::changeRightUp);
+    connect(ui->buttonLeftDown_2, &QPushButton::clicked, this, &MainWindow::changeLeftDown_2);
+    connect(ui->buttonRightDown_2, &QPushButton::clicked, this, &MainWindow::changeRightDown_2);
+    connect(ui->buttonLeftUp_2, &QPushButton::clicked, this, &MainWindow::changeLeftUp_2);
+    connect(ui->buttonRightUp_2, &QPushButton::clicked, this, &MainWindow::changeRightUp_2);
 
 
 
@@ -254,7 +258,7 @@ void MainWindow::setUpCube() {
         {0, 3, 7, 4}, //lewo
         {1, 2, 6, 5}, //prawo
         {0, 4, 5, 1}, // góra
-        {2, 6, 7, 3},// dół
+        {2, 6, 7, 3}, // dół
     }};
 
 
@@ -484,6 +488,30 @@ void MainWindow::changeRightUp(){
     moveRubik(move, dir);
 }
 
+void MainWindow::changeLeftDown_2(){
+    RubikMove move = RubikMove::LeftDown_2;
+    Direction dir = Direction::Clockwise;
+    moveRubik(move, dir);
+}
+
+void MainWindow::changeRightDown_2(){
+    RubikMove move = RubikMove::RightDown_2;
+    Direction dir = Direction::Clockwise;
+    moveRubik(move, dir);
+}
+
+void MainWindow::changeLeftUp_2(){
+    RubikMove move = RubikMove::LeftUp_2;
+    Direction dir = Direction::CounterClockwise;
+    moveRubik(move, dir);
+}
+
+void MainWindow::changeRightUp_2(){
+    RubikMove move = RubikMove::RightUp_2;
+    Direction dir = Direction::CounterClockwise;
+    moveRubik(move, dir);
+}
+
 void MainWindow::moveRubik(RubikMove move, Direction direction) {
     switch (move) {
     case RubikMove::BottomLeft:
@@ -509,6 +537,18 @@ void MainWindow::moveRubik(RubikMove move, Direction direction) {
         break;
     case RubikMove::RightUp:
         rotateCol(direction, {2, 3}, 2);
+        break;
+    case RubikMove::LeftDown_2:
+        rotateCol_2(direction, {0, 1}, 0);
+        break;
+    case RubikMove::RightDown_2:
+        rotateCol_2(direction, {0, 1}, 2);
+        break;
+    case RubikMove::LeftUp_2:
+        rotateCol_2(direction, {0, 1}, 0);
+        break;
+    case RubikMove::RightUp_2:
+        rotateCol_2(direction, {0, 1}, 2);
         break;
     default:
         break;
@@ -597,6 +637,53 @@ void MainWindow::rotateCol(Direction direction, std::pair<int, int> excluded, in
             }
 
             stick.faceId = positionsOYOZ[(id + posChange + 4) % 4];
+
+            std::cout << "przenosze z sciany o face id: " << id
+                      << " do " << (id + posChange + 4) % 4 << std::endl;
+
+        }
+
+    }
+
+    multiplicateMatrix();
+}
+
+void MainWindow::rotateCol_2(Direction direction, std::pair<int, int> excluded, int lookedCol){
+
+    int faceId, row, col;
+    int id = -1;
+
+    for(auto& stick: stickers){
+        faceId = stick.faceId;
+        col = stick.col;
+        if(col == lookedCol && faceId != excluded.first && faceId != excluded.second){
+            for(int i = 0; i < 4; i++){
+                if(faceId == positionsOXOZ[i]){
+                    id = i;
+                    break;
+                }
+            }
+
+            if(id == -1){
+                std::cerr << "for some reason the face wasnt found inside positionsOXOY" << std::endl;
+                return;
+            }
+
+            int posChange = 0;
+
+            switch(direction){
+            case Direction::Clockwise:
+                posChange = -1;
+                break;
+            case Direction::CounterClockwise:
+                posChange = 1;
+                break;
+            default:
+                std::cerr << "for some reason the directory was defined incorrect" << std::endl;
+                return;
+            }
+
+            stick.faceId = positionsOXOZ[(id + posChange + 4) % 4];
 
             std::cout << "przenosze z sciany o face id: " << id
                       << " do " << (id + posChange + 4) % 4 << std::endl;
