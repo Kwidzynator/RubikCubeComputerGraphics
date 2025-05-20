@@ -272,6 +272,8 @@ void MainWindow::setUpCube() {
                 sticker.row = row;
                 sticker.col = col;
 
+                std::cout << "created sticker with: " << std::endl << "faceid: " << faceId << std::endl << "row: " << row << std::endl << "col: " << col << std::endl;
+
                 setColour(&sticker, faceId);
 
                 stickers.push_back(sticker);
@@ -552,6 +554,11 @@ void MainWindow::rotateBottomLeft(Direction direction){
             }
 
             stick.faceId = positionsOXOY[(id + posChange + 4) % 4];
+
+            int oldRow = stick.row;
+            stick.row = 2;
+
+
             //positionsOXOY = {0, 3, 1, 2};
             std::cout << "przenosze z sciany o face id: " << id << " do " << (id + posChange) % 4 << std::endl;
 
@@ -801,7 +808,16 @@ void MainWindow::drawCube() {
                             QPoint p3 = grid[row + 1][col + 1];
                             QPoint p4 = grid[row + 1][col];
 
-                            auto sticker = findSticker(i, row, col);
+                            bool verticalInterpolation = (i == 2 || i == 3);
+
+                            auto sticker = verticalInterpolation
+                                               ? findSticker(i, col, row)
+                                               : findSticker(i, row, col);
+
+                            if (!sticker) {
+                                std::cerr << "Brak naklejki na face=" << i << " row=" << row << " col=" << col << std::endl;
+                                continue;
+                            }
 
                             int r = sticker->r;
                             int g = sticker->g;
@@ -837,20 +853,11 @@ void MainWindow::drawCube() {
 }
 
 MainWindow::Sticker* MainWindow::findSticker(int faceId, int row, int col) {
-    int searchCol = col;
-
-
-    if (faceId == 1) {
-        searchCol = 2;
-    } else if (faceId == 3) {
-        searchCol = 0;
-    }
-
     for (auto& sticker : stickers) {
-        if (sticker.faceId == faceId && sticker.row == row && sticker.col == searchCol) {
+        if (sticker.faceId == faceId && sticker.row == row && sticker.col == col) {
+            //std::cout << "found sticker with: " << std::endl << "faceid: " << faceId << std::endl << "row: " << row << std::endl << "col: " << col << std::endl;
             return &sticker;
         }
     }
-
     return nullptr;
 }
