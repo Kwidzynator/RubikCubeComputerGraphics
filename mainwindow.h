@@ -93,7 +93,8 @@ public:
     };
 
     void moveRubik(RubikMove move, Direction direction);
-
+    void rotateRow(Direction direction, std::pair<int, int> excluded, int looked);
+    void rotateCol(Direction direction, std::pair<int, int> excluded, int looked);
     void rotateBottomLeft(Direction direction);
     void rotateBottomRight(Direction direction);
     void rotateTopLeft(Direction direction);

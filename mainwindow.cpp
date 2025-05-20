@@ -487,45 +487,42 @@ void MainWindow::changeRightUp(){
 void MainWindow::moveRubik(RubikMove move, Direction direction) {
     switch (move) {
     case RubikMove::BottomLeft:
-        rotateBottomLeft(direction);
+        rotateRow(direction, {4, 5}, 2);
         break;
     case RubikMove::BottomRight:
-        rotateBottomRight(direction);
+        rotateRow(direction, {4, 5}, 2);
         break;
     case RubikMove::TopLeft:
-        rotateTopLeft(direction);
+        rotateRow(direction, {4, 5}, 0);
         break;
     case RubikMove::TopRight:
-        rotateTopRight(direction);
+        rotateRow(direction, {4, 5}, 0);
         break;
     case RubikMove::LeftDown:
-        rotateLeftDown(direction);
+        rotateCol(direction, {2, 3}, 0);
         break;
     case RubikMove::RightDown:
-        rotateRightDown(direction);
+        rotateCol(direction, {2, 3}, 2);
         break;
     case RubikMove::LeftUp:
-        rotateLeftUp(direction);
+        rotateCol(direction, {2, 3}, 0);
         break;
     case RubikMove::RightUp:
-        rotateRightUp(direction);
+        rotateCol(direction, {2, 3}, 2);
         break;
     default:
         break;
     }
 }
 
-void MainWindow::rotateBottomLeft(Direction direction){
+void MainWindow::rotateRow(Direction direction, std::pair<int, int> excluded, int lookedRow){
 
-    int lookedRow = 2;
-    int faceId, row, col;
+    int faceId, row;
     int id = -1;
-    std::pair<int, int> excluded = {4, 5};
 
     for(auto& stick: stickers){
         faceId = stick.faceId;
         row = stick.row;
-        col = stick.col;
         if(row == lookedRow && faceId != excluded.first && faceId != excluded.second){
             for(int i = 0; i < 4; i++){
                 if(faceId == positionsOXOY[i]){
@@ -542,43 +539,73 @@ void MainWindow::rotateBottomLeft(Direction direction){
             int posChange = 0;
 
             switch(direction){
-                case Direction::Clockwise:
-                    posChange = -1;
-                    break;
-                case Direction::CounterClockwise:
-                    posChange = 1;
-                    break;
-                default:
-                    std::cerr << "for some reason the directory was defined incorrect" << std::endl;
-                    return;
+            case Direction::Clockwise:
+                posChange = -1;
+                break;
+            case Direction::CounterClockwise:
+                posChange = 1;
+                break;
+            default:
+                std::cerr << "for some reason the directory was defined incorrect" << std::endl;
+                return;
             }
 
             stick.faceId = positionsOXOY[(id + posChange + 4) % 4];
 
-            int oldRow = stick.row;
-            stick.row = 2;
-
-
-            //positionsOXOY = {0, 3, 1, 2};
             std::cout << "przenosze z sciany o face id: " << id << " do " << (id + posChange) % 4 << std::endl;
 
         }
 
     }
 
-    drawCube();
+    multiplicateMatrix();
 }
 
-void MainWindow::rotateBottomRight(Direction direction){
-    drawCube();
-}
+void MainWindow::rotateCol(Direction direction, std::pair<int, int> excluded, int lookedCol){
 
-void MainWindow::rotateTopLeft(Direction direction){
-    drawCube();
-}
+    int faceId, row, col;
+    int id = -1;
 
-void MainWindow::rotateTopRight(Direction direction){
-    drawCube();
+    for(auto& stick: stickers){
+        faceId = stick.faceId;
+        col = stick.col;
+        if(col == lookedCol && faceId != excluded.first && faceId != excluded.second){
+            for(int i = 0; i < 4; i++){
+                if(faceId == positionsOYOZ[i]){
+                    id = i;
+                    break;
+                }
+            }
+
+            if(id == -1){
+                std::cerr << "for some reason the face wasnt found inside positionsOXOY" << std::endl;
+                return;
+            }
+
+            int posChange = 0;
+
+            switch(direction){
+            case Direction::Clockwise:
+                posChange = -1;
+                break;
+            case Direction::CounterClockwise:
+                posChange = 1;
+                break;
+            default:
+                std::cerr << "for some reason the directory was defined incorrect" << std::endl;
+                return;
+            }
+
+            stick.faceId = positionsOYOZ[(id + posChange + 4) % 4];
+
+            std::cout << "przenosze z sciany o face id: " << id
+                      << " do " << (id + posChange + 4) % 4 << std::endl;
+
+        }
+
+    }
+
+    multiplicateMatrix();
 }
 
 void MainWindow::rotateLeftDown(Direction direction){
