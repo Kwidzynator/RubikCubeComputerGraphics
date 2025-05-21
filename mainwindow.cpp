@@ -884,7 +884,7 @@ void MainWindow::drawCube() {
         double dot = vxOut * vx_cam + vyOut * vy_cam + vzOut * vz_cam;
 
 
-        if(dot > 1e-3) {
+        if(dot >= 5000) { //idk why 5000 but it works xd
 
             std::cout << "widoczna sciana: " << i << std::endl;
 
