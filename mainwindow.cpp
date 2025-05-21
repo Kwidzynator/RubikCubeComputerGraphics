@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     setUpSliders();
     setUpImg();
+    whichRotate = false;
     drawline = new DrawLine(layerBehindImg, width, height);
     setUpCube();
 
@@ -557,6 +558,8 @@ void MainWindow::moveRubik(RubikMove move, Direction direction) {
 
 void MainWindow::rotateRow(Direction direction, std::pair<int, int> excluded, int lookedRow){
 
+    whichRotate = false;
+
     int faceId, row;
     int id = -1;
 
@@ -602,7 +605,7 @@ void MainWindow::rotateRow(Direction direction, std::pair<int, int> excluded, in
 }
 
 void MainWindow::rotateCol(Direction direction, std::pair<int, int> excluded, int lookedCol){
-
+    whichRotate = false;
     int faceId, row, col;
     int id = -1;
 
@@ -649,7 +652,7 @@ void MainWindow::rotateCol(Direction direction, std::pair<int, int> excluded, in
 }
 
 void MainWindow::rotateCol_2(Direction direction, std::pair<int, int> excluded, int lookedCol){
-
+    whichRotate = true;
     int faceId, row, col;
     int id = -1;
 
@@ -822,6 +825,8 @@ void MainWindow::movePixel(double m[4], std::vector<std::array<double, 3>>* coor
     coords->push_back({x2D, y2D});
 }
 
+
+
 QPoint lerp(QPoint a, QPoint b, float t) {
     return QPoint(
         static_cast<int>(a.x() * (1 - t) + b.x() * t),
@@ -829,6 +834,14 @@ QPoint lerp(QPoint a, QPoint b, float t) {
         );
 }
 
+QPoint bilinearInterpolate(const QPoint& p1, const QPoint& p2, const QPoint& p3, const QPoint& p4, float u, float v) {
+
+    QPoint top = lerp(p1, p2, u);
+    QPoint bottom = lerp(p4, p3, u);
+
+    // Then interpolate between top and bottom
+    return lerp(top, bottom, v);
+}
 void MainWindow::drawCube() {
     double cameraX = 0;
     double cameraY = 0;
@@ -922,14 +935,19 @@ void MainWindow::drawCube() {
                             QPoint p3 = grid[row + 1][col + 1];
                             QPoint p4 = grid[row + 1][col];
 
-                            bool verticalInterpolation = (i == 2 || i == 3);
+                            int stickerRow = row;
+                            int stickerCol = col;
+                            if(!whichRotate){
+                                std::tie(stickerRow, stickerCol) = getStickerGridCoords(i, row, col);
+                            }
+                            else{
+                                std::tie(stickerRow, stickerCol) = getStickerGridCoordsOXOZ(i, row, col);
+                            }
+                            auto sticker = findSticker(i, stickerRow, stickerCol);
 
-                            auto sticker = verticalInterpolation
-                                               ? findSticker(i, col, row)
-                                               : findSticker(i, row, col);
 
                             if (!sticker) {
-                                std::cerr << "Brak naklejki na face=" << i << " row=" << row << " col=" << col << std::endl;
+                                std::cerr << "Brak naklejki na face=" << i << " row=" << stickerRow << " col=" << stickerCol << std::endl;
                                 continue;
                             }
 
@@ -965,6 +983,45 @@ void MainWindow::drawCube() {
     }
 
 }
+
+std::pair<int, int> MainWindow::getStickerGridCoords(int faceId, int row, int col) {
+    switch (faceId) {
+    case 0: // Front
+        return {row, col};
+    case 1: // Back
+        return {row, col};
+    case 2: // left
+        return {2 - col, row};
+    case 3: // right
+        return {col, 2 - row};
+    case 4: // up
+        return {2 - col,  row};
+    case 5: // down
+        return {2 - col, row};
+    default:
+        return {row, col};
+    }
+}
+
+std::pair<int, int> MainWindow::getStickerGridCoordsOXOZ(int faceId, int row, int col) {
+    switch (faceId) {
+    case 0: // Front
+        return {row, col};
+    case 1: // Back
+        return {row, col};
+    case 2: // Left
+        return {2 - col, row};
+    case 3: // Right
+        return {2 - col, row};
+    case 4: // Up
+        return {row, col};
+    case 5: // Down
+        return {row, col};
+    default:
+        return {row, col};
+    }
+}
+
 
 MainWindow::Sticker* MainWindow::findSticker(int faceId, int row, int col) {
     for (auto& sticker : stickers) {

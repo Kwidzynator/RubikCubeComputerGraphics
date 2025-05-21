@@ -82,6 +82,8 @@ public:
     void changeLeftUp_2();
     void changeRightUp_2();
 
+    bool whichRotate;
+
     enum class RubikMove{
         BottomLeft,
         BottomRight,
@@ -116,6 +118,8 @@ public:
     void rotateLeftUp(Direction direction);
     void rotateRightUp(Direction direction);
 
+    std::pair<int, int> transformRowColForRotationOXOY(Direction dir, int faceId, int row, int col);
+
     void drawCube();
     void multiplicateMatrix();
     std::array<std::array<double, 4>, 4> getBiggerMatrix(std::array<std::array<double, 4>, 4>, std::array<std::array<double, 4>, 4>);
@@ -144,6 +148,10 @@ public:
     std::vector<Sticker> stickers;
     void setColour(MainWindow::Sticker* sticker, int faceId);
     void drawSticker(const Sticker& sticker, const QPoint& startPoint);
+    std::pair<int, int> getStickerGridCoords(int faceId, int row, int col);
+    std::pair<int, int> getStickerGridCoordsOXOZ(int faceId, int row, int col);
+    std::vector<QPoint> sortPointsClockwise(std::vector<QPoint> points);
+    std::unordered_map<int, int> faceRotationOXOZ;
 
     std::array<int, 4> positionsOXOY;
     std::array<int, 4> positionsOXOZ;
